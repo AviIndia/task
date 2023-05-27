@@ -1,0 +1,10 @@
+.clickable { cursor: pointer; }
+.form-control
+{
+    border: solid 1px #818080;
+    border-radius: 0px;
+}
+label{
+    color: black;
+}
+

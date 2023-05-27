@@ -1,0 +1,217 @@
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+    <app-sidebar></app-sidebar>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+           <app-topbar></app-topbar>
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Create Task</h1>
+
+                        <div style="display: flex; justify-content:space-around">
+                        <a href="#" (click)="clickaddBtn('Create New Task')" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target=".bd-example-modal-lg"  data-keyboard="false">
+                            <i class="fas fa-pencil-square fa-sm text-white-50"></i> Create Task</a>
+                            <div style="width:10px;"></div>
+                            <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-keyboard="false" (click)="generateReport()">
+                                <i class="fa fa-cloud-download fa-sm text-white-50"></i> Generate Report</a>
+                            </div>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Created Task Data</h6>
+                        </div>
+                        <div class="card-body">
+                           
+                            <div class="table-responsive">
+                                <table  class="table table-bordered" width="100%" cellspacing="0" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger" id="d-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Task</th>
+                                            <th>Task Type</th>
+                                            <th>Company</th>
+                                            <th>Directorate</th>
+                                            <th>Start date</th>
+                                            <th>End Date</th>
+                                            <th>Category</th>
+                                            <th>Reference</th>
+                                            <th>File</th>
+                                            <th style="text-align:center">Action</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <!-- <tfoot>
+                                        <tr>
+                                            
+                                            <th>Task</th>
+                                            <th>Task Type</th>
+                                            <th>Company</th>
+                                            <th>Directorate</th>
+                                            <th>Start date</th>
+                                            <th>End Date</th>
+                                            <th>Category</th>
+                                            <th>Reference</th>
+                                            <th>File</th>
+                                            <th style="text-align:center">Action</th>
+                                            
+                                        </tr>
+                                    </tfoot> -->
+                                    <tbody *ngIf="filteredData.length > 0">
+                                        
+                                        <tr  *ngFor="let item of filteredData">
+                                            
+                                            <td>{{item.task_name}}</td>
+                                            <td>{{item.task_type}}</td>
+                                            <td>{{item.company}}</td>
+                                            <td>{{item.directorate}}</td>
+                                            <td>{{item.s_date | date}}</td>
+                                            <td>{{item.e_date | date}}</td>
+                                            <td>{{item.category}}</td>
+                                            <td>{{item.ref}}</td>
+                                            <td></td>
+                                            <td style="display:flex;justify-content: space-around;vertical-align: middle;">
+                                                <button (click)="editRow(item)" class="btn btn-sm" data-toggle="modal" data-target=".bd-example-modal-lg" data-placement="top" title="Edit Task"><i class="fa fa-pencil-square" aria-hidden="true" style="color:green;font-size:18px"></i></button>
+                                                <button (click)="delTask(item.id)" class="btn btn-sm" data-placement="top" title="Delete Task"><i class="fa fa-minus-square" aria-hidden="true" style="color: red;font-size:18px;"></i></button>
+                                                <button (click)="saveOngoing(item)" class="btn btn-sm" data-placement="top" title="Ongoing Task"><i class="fa fa-floppy-o" aria-hidden="true" style="color:blue;font-size:18px;"></i></button>
+                                            </td>
+                                           
+                                        </tr>
+                                        
+                               
+                                    </tbody>
+                                </table>
+                               
+                            </div>
+                        </div>
+                    </div>
+            </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+          
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; Coal India 2023</span>
+                </div>
+            </div>
+            
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!----------Create Task Modal------------>
+
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"  data-backdrop="static" aria-hidden="true" id="myModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle" style="color:black">{{modalTitle}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="createTask">
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                  <label for="inputEmail4">Task or Issue</label>
+                  <textarea class="form-control" rows="3" cols="3" formControlName="task_name"></textarea>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="inputState">Task Type</label>
+                    <select id="inputState" class="form-control" formControlName="task_type">
+                      <option selected [ngValue]="null" disabled>Choose One</option>
+                      <option value="Major">Major</option>
+                      <option value="Time Bound Task">Time Bound Task</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="inputState">Company</label>
+                    <select id="inputState" class="form-control" formControlName="company">
+                      <option selected [ngValue]="null" disabled>Choose One</option>
+                      <option value="CIL">CIL</option>
+                      <option value="MCL">MCL</option>
+                      <option value="NCL">NCL</option>
+                      <option value="BCCL">BCCL</option>
+                      <option value="SECL">SECL</option>
+                      <option value="ECL">ECL</option>
+                      <option value="WCL">WCL</option>
+                      <option value="CCL">CCL</option>
+                      <option value="CMPDI">CMPDI</option>
+                      <option value="NEC">NEC</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="inputState">Directorate</label>
+                    <select id="inputState" class="form-control" formControlName="directorate">
+                      <option selected [ngValue]="null" disabled>Choose One</option>
+                      <option value="Loreum Ipsum 1">Loreum Ipsum 1</option>
+                      <option value="Loreum Ipsum 2">Loreum Ipsum 2</option>
+                    </select>
+                </div>
+
+                 <div class="form-group col-md-4">
+                    <label for="inputState">Start Date</label>
+                    <input type="date" id="start-date" class="form-control" formControlName="s_date">
+                  </div>
+                <div class="form-group col-md-4">
+                    <label for="inputState">End Date</label>
+                    <input type="date" id="end-date"  class="form-control" formControlName="e_date" [min]="minEndDate" >
+                </div>
+               
+                
+                <div class="form-group col-md-4">
+                    <label for="inputState">Category</label>
+                    <select id="inputState" class="form-control" formControlName="category">
+                      <option selected [ngValue]="null" disabled>Choose One</option>
+                      <option value="Category 1">Category 1</option>
+                      <option value="Category 2">Category 2</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label for="inputEmail4">Reference</label>
+                    <textarea class="form-control" rows="3" cols="3" formControlName="ref"></textarea>
+                  </div>
+                  <!-- <div class="form-group col-md-12">
+                    <label for="inputEmail4">Upload File</label>
+                    <input type="file" class="form-control" (change)="onFileChange($event)" formControlName="image">
+                  </div> -->
+                 
+              </div>
+              
+              <div class="modal-footer">
+                <button type="button" id="cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" *ngIf="showsave" (click)="postTask()" class="btn btn-primary" >Save Data</button>
+                <button type="submit" *ngIf="showupdate" (click)="updateTask()" class="btn btn-primary" >Update Data</button>
+              </div>
+            
+          </form>
+        </div>
+        
+      </div>
+  </div>
+</div>

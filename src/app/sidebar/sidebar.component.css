@@ -1,0 +1,13 @@
+
+
+a
+{
+    font-family: 'Mulish', sans-serif; 
+}
+.coal-icon {
+    background-image: url('../../assets/coal.png');
+    height: 40px;
+    width: 30px;
+    display: block;
+    /* Other styles here */
+}
